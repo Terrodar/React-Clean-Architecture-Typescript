@@ -1,0 +1,39 @@
+owner:
+  group: cl-walmart-predictive-center
+
+notify:
+  slack:
+    channelName: data-predictive-center-ops
+
+profiles:
+  - node
+
+build:
+  docker:
+    app:
+      buildArgs:
+        nodeVersion: 14.15.0
+        buildDir: build
+
+deploy:
+  namespace: predictive-center-tic-tac-toe-example
+  tenantSite: none
+  helm:
+    values:
+      networking:
+        internalPort: 8080
+      readinessProbe:
+        path: '/'
+      livenessProbe:
+        path: '/'
+      scaling:
+        min: 1
+        max: 3
+      max:
+        memory: 256Mi
+  stages:
+    - name: lab
+      flows: [release]
+      rollbackOnError: true
+      target:
+        cluster_id: [scus-lab-a1]
